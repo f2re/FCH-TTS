@@ -42,13 +42,13 @@ hparams = HParam(args.config) \
 
 datasets_path = hparams.data.datasets_path
 dataset_file_url = \
-    f'https://open-speech-data.oss-cn-hangzhou.aliyuncs.com/{hparams.data.dataset_dir}.tar.bz2'
+    f'https://open-speech-data.oss-cn-hangzhou.aliyuncs.com/{hparams.data.dataset_dir}.tar.gz'
 dataset_file_name = osp.basename(dataset_file_url)
-dataset_dir = dataset_file_name[:-8]
+dataset_dir = dataset_file_name[:-7]
 dataset_path = osp.join(datasets_path, dataset_dir)
 wavfile_path = osp.join(dataset_path, "wavs")
 melspec_path = osp.join(dataset_path, "mels")
-
+print("----",dataset_file_name)
 
 if osp.isdir(melspec_path) and False:
     print("%s dataset folder already exists" % dataset_dir)
@@ -60,13 +60,15 @@ else:
     else:
         print("'%s' already exists" % dataset_file_name)
 
-    if not osp.isdir(wavfile_path):
+    if not osp.isdir(dataset_path):
         print("extracting '%s'..." % dataset_file_name)
-        os.system('cd %s; tar xvjf %s' % (datasets_path, dataset_file_name))
+        os.system('cd %s; mkdir ./%s' % (datasets_path,hparams.data.dataset_dir))
+        os.system('cd %s; tar xvf %s --directory ./%s' % (datasets_path, dataset_file_name, hparams.data.dataset_dir))
     else:
         print("'%s' already exists" % wavfile_path)
 
     dataset_root = osp.join(hparams.data.datasets_path, hparams.data.dataset_dir)
+    print("==============",dataset_root)
     dataset = SpeechDataset([], dataset_root, hparams.text)
     processor = Processor(hparams=hparams.audio)
 

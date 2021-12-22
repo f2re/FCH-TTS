@@ -86,7 +86,7 @@ class Processor:
         os.makedirs(mels_path, exist_ok=True)
 
         for i, fname in tqdm(enumerate(speech_dataset.fnames)):
-            mel, _ = self.get_spectrograms(osp.join(wavs_path, '%s.wav' % fname), self.hparams.normalize)
+            mel, _ = self.get_spectrograms(osp.join(dataset_path, fname), self.hparams.normalize)
             mel = mel.squeeze(0)
             # mel = standard_norm(mel).clamp(hp.scale_min,hp.scale_max)
 
@@ -99,8 +99,9 @@ class Processor:
             mel = mel.transpose(1, 0)
             # Reduction
             # mel = mel[::hp.reduction_rate, :]
-
-            np.save(osp.join(mels_path, '%s.npy' % fname), mel)
+            path = osp.join(mels_path, '%s.npy' % fname[:-4])
+            os.system('mkdir -p %s' % os.path.dirname(path) )
+            np.save(path, mel)
 
 
     def precompute(self, dataset_path, speech_dataset):
@@ -115,7 +116,7 @@ class Processor:
         lengths = []
 
         for i, fname in tqdm(enumerate(speech_dataset.fnames)):
-            mel, _ = self.get_spectrograms(osp.join(wavs_path, '%s.wav' % fname), self.hparams.normalize)
+            mel, _ = self.get_spectrograms(osp.join(dataset_path,  fname), self.hparams.normalize)
             mel = mel.squeeze(0)
 
             lengths.append(mel.size(1))

@@ -5,6 +5,7 @@ import re
 import codecs
 import unicodedata
 import numpy as np
+import json
 from g2p_en import G2p
 
 import torch
@@ -71,7 +72,7 @@ class SpeechDataset(Dataset):
         self.path = root
         self.text_proc = TextProcessor(hparams)
         self.fnames, self.text_lengths, self.texts = \
-            self.read_metadata(osp.join(self.path, 'metadata.csv'))
+            self.read_metadata_json(osp.join(self.path, 'train/manifest.json'))
         del self.text_proc
         self.embeds = self.durans = None
 
@@ -83,6 +84,24 @@ class SpeechDataset(Dataset):
             self.embeds = self.embeds[start:end]
         if self.durans is not None:
             self.durans = self.durans[start:end]
+
+    def read_metadata_json(self, metadata_file):
+        fnames, text_lengths, texts = [], [], []
+        # with codecs.open(metadata_file, 'r', 'utf-8') as json_file:  
+        #     data = json.load(json_file)
+        #     print(data)
+        #     exit()
+        lines = codecs.open(metadata_file, 'r', 'utf-8').readlines()
+        for line in lines:
+            data = json.loads(line)
+            # print(data)
+            # exit()
+            fname, text = 'train/'+data['audio_filepath'], data['text']
+            fnames.append(fname)
+            text, tlen = self.text_proc(text)
+            text_lengths.append(tlen[0])
+            texts.append(np.array(text[0], np.long))
+        return fnames, text_lengths, texts
 
     def read_metadata(self, metadata_file):
         fnames, text_lengths, texts = [], [], []

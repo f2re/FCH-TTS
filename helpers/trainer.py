@@ -168,7 +168,9 @@ class DurationTrainer(Trainer):
 
         pbar = tqdm(dataloader, unit="audios", unit_scale=dataloader.batch_size, \
                     disable=self.hparams.trainer.disable_progress_bar)
+        # print(pbar)
         for it, batch in enumerate(pbar, start=1):
+            # print(batch)
             self.optimizer.zero_grad()
 
             mels, mlens, texts, tlens = \

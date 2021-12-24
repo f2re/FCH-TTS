@@ -138,10 +138,10 @@ class SpeechDataset(Dataset):
             data['tlens'] = np.array([data['texts'].shape[0]])
         if 'mels' in self.keys:
             # (T, 80)
-            data['mels'] = np.load(os.path.join(self.path, 'mels', "%s.npy" % self.fnames[index]))
+            data['mels'] = np.load(os.path.join(self.path, 'mels', "%s.npy" % self.fnames[index][:-4]))
         if 'mels-gt' in self.keys:
             # (T, 80)
-            data['mels'] = np.load(os.path.join(self.path, 'mels-gt', "%s.npy" % self.fnames[index]))
+            data['mels'] = np.load(os.path.join(self.path, 'mels-gt', "%s.npy" % self.fnames[index][:-4]))
         if 'mlens' in self.keys:
             data['mlens'] = np.array([data['mels'].shape[0]])
         if 'embs' in self.keys:

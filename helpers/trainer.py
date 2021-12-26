@@ -33,7 +33,8 @@ class Trainer:
                  compute_metrics=None,
                  optimizers=None,
                  checkpoint=None,
-                 device=None
+                 device=None,
+                 drivepath=None
     ):
         # model, metrics, optim
         self.model = model
@@ -42,6 +43,8 @@ class Trainer:
 
         # dataset
         self.dataset = dataset
+        #  Google drive path
+        self.drivepath = drivepath
 
         # device
         self.device = device
@@ -64,6 +67,16 @@ class Trainer:
         if self.checkpoint is not None:
             os.remove(self.checkpoint)
         self.checkpoint = osp.join(self.loggers.logdir, f'{time.strftime("%Y-%m-%d")}_chkpt_epoch{self.epoch:03d}.pth')
+        if self.drivepath is not None:
+            torch.save(
+                {
+                    'epoch': self.epoch,
+                    'step': self.step,
+                    'state_dict': self.model.state_dict(),
+                    'optimizer': self.optimizer.state_dict(),
+                    'scheduler': self.scheduler.state_dict()
+                },
+                osp.join(self.drivepath, f'{time.strftime("%Y-%m-%d")}_chkpt_epoch{self.epoch:03d}.pth'))    
         print("Saving the checkpoint file '%s'..." % self.checkpoint)
         torch.save(
             {
@@ -103,7 +116,8 @@ class DurationTrainer(Trainer):
                  warmup_epochs=30,
                  init_scale=0.25,
                  checkpoint=None,
-                 device='cuda'
+                 device='cuda',
+                 drivepath=None
     ):
         self.hparams = hparams
         model = DurationExtractor(hparams.duration)
@@ -113,14 +127,15 @@ class DurationTrainer(Trainer):
         optimizer = torch.optim.Adam(model.parameters(), lr=adam_lr)
         scheduler = NoamScheduler(optimizer, warmup_epochs, init_scale)
         optimizers = (optimizer, scheduler)
-
+        
         super(DurationTrainer, self).__init__(
                 model=model,
                 dataset=dataset,
                 compute_metrics=compute_metrics,
                 optimizers=optimizers,
                 checkpoint=checkpoint,
-                device=device
+                device=device,
+                drivepath=None
         )
     
     def fit(self, batch_size, epochs=1, chkpt_every=10, checkpoint=None, loggers=None):
@@ -279,7 +294,8 @@ class ParallelTrainer(Trainer):
                  adam_lr=0.002,
                  ground_truth=False,
                  checkpoint=None,
-                 device='cuda'
+                 device='cuda',
+                 drivepath=None
     ):
         self.hparams = hparams
         model = ParallelText2Mel(hparams.parallel)
@@ -297,7 +313,8 @@ class ParallelTrainer(Trainer):
                 compute_metrics=compute_metrics,
                 optimizers=optimizers,
                 checkpoint=checkpoint,
-                device=device
+                device=device,
+                drivepath=None
         )
     
     def fit(self, batch_size, epochs=1, chkpt_every=10, checkpoint=None, duration_file=None, loggers=None):

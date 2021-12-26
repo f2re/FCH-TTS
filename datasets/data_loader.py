@@ -59,11 +59,15 @@ def collate_fn(batch):
     # find out the max lengths
     for row in batch:
         for key in keys:
+            if key not in row:
+                continue
             max_lengths[key] = max(max_lengths[key], row[key].shape[0])
 
     # pad to the max lengths
     for row in batch:
         for key in keys:
+            if key not in row:
+                continue
             array = row[key]
             dim = len(array.shape)
             assert dim == 1 or dim == 2

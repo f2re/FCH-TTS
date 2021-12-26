@@ -72,7 +72,8 @@ if __name__ == '__main__':
     trainer.fit(
         batch_size=args.batch_size,
         epochs=args.epochs,
-        chkpt_every=10,
+        chkpt_every=5,
         checkpoint=args.checkpoint,
-        loggers=loggers
+        loggers=loggers,
+        drivepath='/content/drive/MyDrive/TTS/checkpoint/'
     )

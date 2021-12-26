@@ -64,13 +64,14 @@ if __name__ == '__main__':
         hparams=hparams,
         adam_lr=0.002,
         warmup_epochs=30,
-        device=device
+        device=device,
+        drivepath='/content/drive/MyDrive/TTS/checkpoint/'
     )
 
     trainer.fit(
         batch_size=args.batch_size,
         epochs=args.epochs,
-        chkpt_every=10,
+        chkpt_every=3,
         checkpoint=args.checkpoint,
         loggers=loggers
     )

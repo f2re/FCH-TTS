@@ -138,7 +138,11 @@ class SpeechDataset(Dataset):
             data['tlens'] = np.array([data['texts'].shape[0]])
         if 'mels' in self.keys:
             # (T, 80)
-            data['mels'] = np.load(os.path.join(self.path, 'mels', "%s.npy" % self.fnames[index][:-4]))
+            path = os.path.join(self.path, 'mels', "%s.npy" % self.fnames[index][:-4])
+            if os.path.isfile(path):
+                data['mels'] = np.load(os.path.join(self.path, 'mels', "%s.npy" % self.fnames[index][:-4]),allow_pickle=True)
+            else:
+                return {}
         if 'mels-gt' in self.keys:
             # (T, 80)
             data['mels'] = np.load(os.path.join(self.path, 'mels-gt', "%s.npy" % self.fnames[index][:-4]))
